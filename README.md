@@ -1,2 +1,2 @@
 # freecad-sputniki
-Procedurallty generated holiday decorations for 3D printing
+Procedurally generated holiday decorations for 3D printing
