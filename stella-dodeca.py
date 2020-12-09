@@ -17,17 +17,30 @@ def length(first):
         return math.sqrt(first.x*first.x + first.y*first.y + first.z*first.z)
 
 ######## size constants, in mm
+# rough icosa diameter
+icosa_diam = 22.0   # add this to sphere diameter to get (rough?) icosa "diam"
+scale = icosa_diam/2
 
-# inner sphere diameter
-sphere_diam = 40.0
-icosa_pad = 8.0   # add this to sphere diameter to get (rough?) icosa "diam"
-drill_diam = 1.8   # radius of drill holes
-drill_depth = 2*icosa_pad
+
+#diameter of alignment holes (2.0 mm is about right to use 1.75 filament as pins
+align_diam = 2.0 
 # separation of drill holes in mm
-drill_sep = 5
+align_sep = 5.0 
+# depth of alignment holes: too deep and they will poke through spikes
+align_depth = 6.0 
 
-# icosa ratio: multiply scale by this to get outside dimension
-icosa_ratio = 48.53/25.0
+#daim of hole all the way through for hanging
+hole_diam = 2.0
+
+# radius of spikes
+cone_length = 60
+
+
+# inner and outr diameter of spikes
+spike_inner = 5.0
+spike_outer = 1.0
+
+sphere_diam = 5
 
 ########
 
@@ -61,11 +74,9 @@ obj.Label = "dodeca body"
 
 vtex =[]
 phi = (math.sqrt(5.) + 1.) / 2.0
-scale = 1.0
+#scale = 1.0
 
-# need to scale phi if scale is not 1.0
 
-scale = (sphere_diam/2 + icosa_pad)/icosa_ratio
 phi = phi*scale
 
 
@@ -177,42 +188,6 @@ vscale = (1.5, 0.75, 1)
     
 spikes = []
 spikeu = None
-#for i, face in enumerate(facelist):
-#
-#    pt0 = vtex[face[0]]
-#    pt1 = vtex[face[1]]
-#    pt2 = vtex[face[2]]
-    # vector normal to face
-#    midpt = (pt0 + pt1 + pt2)/3. 
-
-# make drill circles for each vertex
-# dcircles = []
-# for i, v in enumerate(midpts):
-#     vname = "circle{}".format(i)
-#     myPart = App.ActiveDocument.addObject("Part::Feature", vname)
-#     myPart.Shape = Part.makeCircle(0.1,1.1*v, v)
-#     #the workaround by directly altering the property
-#     dcircles.append(myPart)
-
-# App.ActiveDocument.Body.Group = App.ActiveDocument.Body.Group + dcircles
-# App.ActiveDocument.recompute()
-
-# drill holes
-
-#>>> App.getDocument('Unnamed').getObject('Hole').Profile = App.getDocument('Unnamed').getObject('vertex11')
-#>>> App.ActiveDocument.recompute()
-
-# holes = []
-# for i, d  in enumerate(dcircles):
-#     hname = "hole{}".format(i)
-#     hole  = App.getDocument('Unnamed').getObject('Body').newObject('PartDesign::Hole',hname)
-#     #hole = App.ActiveDocument.addObject('PartDesign::Hole','Hole')
-#     hole.Profile = d
-#     hole.Diameter = drill_diam
-#     hole.Depth = drill_depth
-#     holes.append(hole)
-
-
 
 #for midpt in midpts:
 spikes = []
@@ -234,7 +209,7 @@ for i, midpt in enumerate(vtex):
 
 
         # vector to tip of cone
-        cone_tip = 3*scale * midpt/length(midpt)
+        cone_tip = cone_length * midpt/length(midpt)
 
         #rotate so center of "tripod" is in Z-direction
         cone_tip = rot.multVec(cone_tip)
@@ -246,14 +221,14 @@ for i, midpt in enumerate(vtex):
 
         # if we start at origin geometrey crashes, so offset cone
         # slightly
-        S = Part.makeCone(5, 1, cone_length,  .05*cone_tip, cone_tip )
+        S = Part.makeCone(spike_inner, spike_outer, cone_length,  .05*cone_tip, cone_tip )
 
         #Part.Show(S)
         sname = "spike{}".format(i)
 
         # make deelybopper for this spike
         #makeSphere(radius,[center_pnt, axis_dir, V_startAngle, V_endAngle, U_angle])
-        D = Part.makeSphere(0.2*scale, 1.1*cone_tip)
+        D = Part.makeSphere(sphere_diam/2, 1.05*cone_tip)
 
         spikeu =  S.fuse(D)
 
@@ -282,8 +257,8 @@ App.ActiveDocument.recompute()
 #clone = Draft.scale(myPart, scale, copy=False)
 
 App.ActiveDocument.addObject("Part::Cylinder","chopcyl")
-FreeCAD.getDocument('Unnamed').getObject('chopcyl').Radius = 4*scale 
-FreeCAD.getDocument('Unnamed').getObject('chopcyl').Height = 5*scale 
+FreeCAD.getDocument('Unnamed').getObject('chopcyl').Radius = 2*cone_length 
+FreeCAD.getDocument('Unnamed').getObject('chopcyl').Height = 3*cone_length
 
 top = True
 
@@ -302,16 +277,16 @@ App.activeDocument().half.Tool = App.activeDocument().chopcyl
 App.ActiveDocument.recompute()
 
 App.ActiveDocument.addObject("Part::Cylinder","hole")
-FreeCAD.getDocument('Unnamed').getObject('hole').Radius = 1
+FreeCAD.getDocument('Unnamed').getObject('hole').Radius = hole_diam/2
 FreeCAD.getDocument('Unnamed').getObject('hole').Height = 60
 
 align1 = App.ActiveDocument.addObject("Part::Cylinder","align1")
-align1.Radius = 1.75/2
-align1.Height = 6
+align1.Radius = align_diam/2
+align1.Height = align_depth
 
 align2 =App.ActiveDocument.addObject("Part::Cylinder","align2")
-align2.Radius = 1.75/2
-align2.Height = 6 
+align2.Radius = align_diam/2
+align2.Height = align_depth
 
 App.ActiveDocument.recompute()
 
@@ -346,17 +321,6 @@ App.ActiveDocument.recompute()
 
 # drill two alignment holes using cylinders
 
-#Gui.Selection.addSelection('Unnamed','Body','dodeca.')
-#Gui.runCommand('Std_ToggleVisibility',0)
-# myPart = App.ActiveDocument.addObject("Part::Feature", "align1")
-# myPart.Shape = Part.makeCircle(0.1, App.Vector(0,0,0),  App.Vector(0,0,1))
-# myPart.Placement = App.Placement(App.Vector(5,0,0),
-#                                  App.Rotation(App.Vector(0,0,1),0))
-
-# hole = App.getDocument('Unnamed').getObject('Body').newObject('PartDesign::Hole', 'Align')
-# hole.Profile = myPart
-# hole.Diameter = 1.8
-# hole.Depth = 5
 
 
 # get cwd. This is tricksy becayse os.cwd is path to executable :(
