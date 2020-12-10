@@ -33,14 +33,14 @@ align_depth = 6.0
 hole_diam = 2.0
 
 # radius of spikes
-cone_length = 60
+spike_length = 45
 
 
 # inner and outr diameter of spikes
 spike_inner = 5.0
 spike_outer = 1.0
 
-sphere_diam = 5
+sphere_diam = 6
 
 ########
 
@@ -173,17 +173,6 @@ App.ActiveDocument.recompute()
 
 # now have a list of edge vertexes in edgelist -- a list of two-vertex tuples for each edge.
 
-# make a list  of vectors that are face midpoints
-
-midpts = []
-#orthov = []
-for edge in edgelist:
-   midpts.append((vtex[edge[0]] + vtex[edge[1]])/2) 
-
-
-# scale direction vector 
-vscale = (1.5, 0.75, 1)
-
 
     
 spikes = []
@@ -209,7 +198,7 @@ for i, midpt in enumerate(vtex):
 
 
         # vector to tip of cone
-        cone_tip = cone_length * midpt/length(midpt)
+        cone_tip = spike_length * midpt/length(midpt)
 
         #rotate so center of "tripod" is in Z-direction
         cone_tip = rot.multVec(cone_tip)
@@ -218,7 +207,8 @@ for i, midpt in enumerate(vtex):
         cone_tip.scale(1.0, 0.7, 1.3)
 
         cone_length = length(cone_tip)
-
+        print(cone_length)
+        
         # if we start at origin geometrey crashes, so offset cone
         # slightly
         S = Part.makeCone(spike_inner, spike_outer, cone_length,  .05*cone_tip, cone_tip )
