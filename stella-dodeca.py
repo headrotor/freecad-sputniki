@@ -42,6 +42,10 @@ spike_outer = 1.0
 
 sphere_diam = 6
 
+# False to generate bottom. It's exactly the same but rotated so no reason to do this!
+top = True
+
+
 ########
 
 
@@ -250,12 +254,11 @@ App.ActiveDocument.addObject("Part::Cylinder","chopcyl")
 FreeCAD.getDocument('Unnamed').getObject('chopcyl').Radius = 2*cone_length 
 FreeCAD.getDocument('Unnamed').getObject('chopcyl').Height = 3*cone_length
 
-top = True
 
 if top:
-    rot = 0
+    rot = 180
 else:
-    rot =180
+    rot = 0
     
 FreeCAD.getDocument('Unnamed').getObject('chopcyl').Placement = App.Placement(App.Vector(0,0,0),App.Rotation(App.Vector(0,1,0),rot))
 
@@ -282,9 +285,9 @@ App.ActiveDocument.recompute()
 
 
 if top:
-    rot = 180
-else:
     rot = 0
+else:
+    rot = 180
 
 FreeCAD.getDocument('Unnamed').getObject('hole').Placement = App.Placement(App.Vector(0,0,0),App.Rotation(App.Vector(0,1,0),rot))
 
