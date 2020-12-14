@@ -3,7 +3,7 @@ Procedurally generated holiday decorations for 3D printing
 
 ![](sputniki-ornaments.gif)
 
-More information at [http://www.rotormind.com/blog/2020/FreeCAD](http://www.rotormind.com/blog/2020/FreeCAD)
+More information at [http://www.rotormind.com/blog/2020/FreeCAD-Sputnik-Ornaments](http://www.rotormind.com/blog/2020/FreeCAD-Sputnik-Ornaments)
 
 For printing, use the
 [top12spikes.stl](https://github.com/headrotor/freecad-sputniki/blob/main/top12spikes.stl)
