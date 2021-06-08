@@ -53,8 +53,6 @@ def make_edges(a, b, c):
 doc = App.newDocument()
 
 
-obj = App.ActiveDocument.addObject("PartDesign::Body", "Body")
-obj.Label = "dodeca body"
 
 #obj.addProperty("App::PropertyLinkGlobal","Base","Draft","App::Property","The base object that must be duplicated")
 
@@ -85,12 +83,37 @@ vtex.append(FreeCAD.Vector(-phi, 0, -scale))
 vtex.append(FreeCAD.Vector(-phi, 0, scale))
 
 # for rectangle "skeleton"
-# test_wire = Part.makePolygon([vtex[0],vtex[1],vtex[2], vtex[3], vtex[0]])
-# Part.show(test_wire)
-# test_wire = Part.makePolygon([vtex[4],vtex[5],vtex[6], vtex[7], vtex[4]])
-# Part.show(test_wire)
-# test_wire = Part.makePolygon([vtex[8],vtex[9],vtex[10], vtex[11], vtex[8]])
-# Part.show(test_wire)
+
+obj = App.ActiveDocument.addObject("PartDesign::Body", "frame")
+obj.Label = "frame"
+
+obj = App.ActiveDocument.addObject("PartDesign::Body", "Body")
+obj.Label = "Body"
+
+wire = Part.makePolygon([vtex[0],vtex[1],vtex[3], vtex[2], vtex[0]])
+#wire = Part.makePolygon([vtex[0],vtex[1],vtex[2], vtex[3], vtex[0]])
+frame1 = App.getDocument('Unnamed').getObject('frame').newObject('PartDesign::Feature','frame1')
+frame1.Shape = wire
+
+
+#wire = Part.makePolygon([vtex[4],vtex5],vtex[6], vtex[7], vtex[4]])
+wire = Part.makePolygon([vtex[5],vtex[4],vtex[6], vtex[7], vtex[5]])
+frame2 = App.getDocument('Unnamed').getObject('frame').newObject('PartDesign::Feature','frame2')
+frame2.Shape = wire
+
+
+wire = Part.makePolygon([vtex[8],vtex[9],vtex[11], vtex[10], vtex[8]])
+frame3 = App.getDocument('Unnamed').getObject('frame').newObject('PartDesign::Feature','frame3')
+frame3.Shape = wire
+
+App.activeDocument().addObject("Part::Compound","Frame")
+App.activeDocument().Frame.Links = [frame1, frame2, frame3]
+App.ActiveDocument.recompute()
+
+
+
+
+#Part.show(test_wire)
 
 
 # for i in range(len(vtex) - 1):
@@ -155,13 +178,23 @@ myShell = Part.makeShell(faces)
 mySolid = Part.makeSolid(myShell)
 
 
-#myPart = App.getDocument('Unnamed').getObject('Body').newObject('PartDesign::Feature','dodeca')
+myPart = App.getDocument('Unnamed').getObject('Body').newObject('PartDesign::Feature','icosa-shell')
 #myPart.Shape = mySolid
-
-
-
-
+myPart.Shape = myShell
 App.ActiveDocument.recompute()
+
+myPart = App.getDocument('Unnamed').getObject('Body').newObject('PartDesign::Feature','icosa-solid')
+#myPart.Shape = mySolid
+myPart.Shape = mySolid
+App.ActiveDocument.recompute()
+
+
+
+# make wire dodeca 
+#comp = App.getDocument('Unnamed').getObject('Body').newObject("Part::Compound","icosa_wire")
+#comp.Links = thefaces
+#App.ActiveDocument.recompute()
+
 
 # now have a list of edge vertexes in edgelist -- a list of two-vertex tuples for each edge.
 
