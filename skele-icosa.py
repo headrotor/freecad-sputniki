@@ -227,7 +227,7 @@ vscale = (1.5, 0.75, 1)
 def make_loft(face1, face2, n):
     # given two faces, create new body, two new sketches,
     #two new circles, and loft between them. Rturn body
-    strut = 1 # diameter of strut
+    strut = 3 # diameter of strut
     bname = "Body{:02}".format(n)
     snameA = "sketch{:02}A".format(n)
     snameB = "sketch{:02}B".format(n)
@@ -236,36 +236,37 @@ def make_loft(face1, face2, n):
     obj.Label = "body{:02}".format(n)
 
     sketchA = obj.newObject('Sketcher::SketchObject',snameA)
-    #App.getDocument('Unnamed').getObject('Sketch').Support = (App.getDocument('Unnamed').getObject('dodeca'),['Face12',])
-
-    
-    # App.getDocument('Unnamed').getObject(snameA).Support = face1
-    # App.getDocument('Unnamed').getObject(snameA).MapMode = 'FlatFace'
-    # App.ActiveDocument.recompute()
-    # App.getDocument('Unnamed').getObject(snameA).addGeometry(Part.Circle(App.Vector(-0.000000,0.000000,0),App.Vector(0,0,1),7.858573),False)
-    # App.getDocument('Unnamed').getObject(snameA).addConstraint(Sketcher.Constraint('Coincident',0,3,-1,1))
-    # App.getDocument('Unnamed').getObject(snameA).addConstraint(Sketcher.Constraint('Diameter',0,5)) 
     sketchA.Support = face1
     sketchA.MapMode = 'FlatFace'
     App.ActiveDocument.recompute()
     sketchA.addGeometry(Part.Circle(App.Vector(-0.000000,0.000000,0),App.Vector(0,0,1),7.858573),False)
     sketchA.addConstraint(Sketcher.Constraint('Coincident',0,3,-1,1))
     sketchA.addConstraint(Sketcher.Constraint('Diameter',0,strut)) 
-    App.ActiveDocument.recompute()
+    #App.ActiveDocument.recompute()
 
     sketchB = obj.newObject('Sketcher::SketchObject',snameB)
-    App.getDocument('Unnamed').getObject(snameB).Support = face2
-    App.getDocument('Unnamed').getObject(snameB).MapMode = 'FlatFace'
+    sketchB.Support = face2
+    sketchB.MapMode = 'FlatFace'
     App.ActiveDocument.recompute()
-    App.getDocument('Unnamed').getObject(snameB).addGeometry(Part.Circle(App.Vector(-0.000000,0.000000,0),App.Vector(0,0,1),7.858573),False)
-    App.getDocument('Unnamed').getObject(snameB).addConstraint(Sketcher.Constraint('Coincident',0,3,-1,1))
-    App.getDocument('Unnamed').getObject(snameB).addConstraint(Sketcher.Constraint('Diameter',0,strut)) 
+    sketchB.addGeometry(Part.Circle(App.Vector(-0.000000,0.000000,0),App.Vector(0,0,1),7.858573),False)
+    sketchB.addConstraint(Sketcher.Constraint('Coincident',0,3,-1,1))
+    sketchB.addConstraint(Sketcher.Constraint('Diameter',0,strut)) 
     App.ActiveDocument.recompute()
 
 
     loft = App.getDocument('Unnamed').getObject(bname).newObject('PartDesign::AdditiveLoft',lname)
-    App.getDocument('Unnamed').getObject(lname).Profile = App.getDocument('Unnamed').getObject(snameA)
-    App.getDocument('Unnamed').getObject(lname).Sections += [App.getDocument('Unnamed').getObject(snameB)]
+    #loft.Profile = App.getDocument('Unnamed').getObject(snameA)
+    #loft.Sections += [App.getDocument('Unnamed').getObject(snameB)]
+    loft.Profile = sketchA
+    loft.Sections = [sketchB]
+    App.ActiveDocument.recompute()
+
+    #fillet = App.getDocument('Unnamed').getObject(bname).newObjectAt('PartDesign::Fillet','Fillet', FreeCADGui.Selection.getSelection())
+    ##App.getDocument('Unnamed').getObject('Fillet').Radius = 1.000000
+    ##App.getDocument('Unnamed').getObject('Fillet').Base = (App.getDocument('Unnamed').getObject(lname),["Face1",])
+    #fillet.Radius = 1.000000
+    #fillet.Base = (App.getDocument('Unnamed').getObject(lname),["Face1",])
+ 
     App.ActiveDocument.recompute()
     return loft
     
@@ -405,7 +406,6 @@ App.activeDocument().Dodec.Links = cubestruts
 App.ActiveDocument.recompute()
 
 
-
 tetras = []
 #0
 tetras.append([ 'Body130', 'Body128', 'Body170','Body47', 'Body42', 'Body49'])
@@ -450,6 +450,7 @@ for strutname in cstar_struts:
 part = App.activeDocument().addObject("Part::Compound","central_star")
 part.Links = struts
 App.ActiveDocument.recompute()
+
 
 stella_struts = [ 'Body185', 'Body28', 'Body135', 'Body75', 'Body44',
            'Body61', 'Body115', 'Body11', 'Body46', 'Body92', 'Body181',
