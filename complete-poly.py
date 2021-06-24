@@ -318,7 +318,9 @@ dodec = [ hairball[158], hairball[131], hairball[132], hairball[166], hairball[1
           hairball[122]]
 
 
-
+# x: 7.78
+# y 0
+# z -20.37
 
 
 tetras = Part.getSortedClusters(stella_struts)
